@@ -1,27 +1,28 @@
 <?php
 
-namespace Picqer\BolRetailerV8;
+namespace Picqer\BolRetailer;
 
 use GuzzleHttp\Client as HttpClient;
 use GuzzleHttp\Exception\BadResponseException;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Exception\ConnectException as GuzzleConnectException;
-use Picqer\BolRetailerV8\Exception\RateLimitException;
-use Picqer\BolRetailerV8\Exception\ServerException;
-use Picqer\BolRetailerV8\Model\AbstractModel;
-use Picqer\BolRetailerV8\Exception\ConnectException;
-use Picqer\BolRetailerV8\Exception\Exception;
-use Picqer\BolRetailerV8\Exception\ResponseException;
-use Picqer\BolRetailerV8\Exception\UnauthorizedException;
-use Picqer\BolRetailerV8\Model\Authentication\TokenResponse;
-use Picqer\BolRetailerV8\Model\Authentication\TokenRequest;
+use Picqer\BolRetailer\Exception\RateLimitException;
+use Picqer\BolRetailer\Exception\ServerException;
+use Picqer\BolRetailer\Model\AbstractModel;
+use Picqer\BolRetailer\Exception\ConnectException;
+use Picqer\BolRetailer\Exception\Exception;
+use Picqer\BolRetailer\Exception\ResponseException;
+use Picqer\BolRetailer\Exception\UnauthorizedException;
+use Picqer\BolRetailer\Model\Authentication\TokenResponse;
+use Picqer\BolRetailer\Model\Authentication\TokenRequest;
 use Psr\Http\Message\ResponseInterface;
 
 class BaseClient
 {
     protected const API_TOKEN_URI = 'https://login.bol.com/token';
     protected const API_ENDPOINT = 'https://api.bol.com/';
-    protected const API_CONTENT_TYPE_JSON = 'application/vnd.retailer.v8+json';
+    protected const API_CONTENT_TYPE_FALLBACK = 'application/vnd.retailer.v10+json';
+    protected const API_ACCEPT_FALLBACK = 'application/vnd.retailer.v10+json';
 
     /**
      * @var bool Whether request will be sent to the demo endpoint.
@@ -390,19 +391,33 @@ class BaseClient
 
         $httpOptions = [];
         $httpOptions['headers'] = [
-            'Accept' => $options['produces'] ?? static::API_CONTENT_TYPE_JSON,
+            'Accept' => $options['produces'] ?? static::API_ACCEPT_FALLBACK,
             'Authorization' => sprintf('Bearer %s', $this->accessToken->getToken()),
         ];
 
         // encode the body if a model is supplied for it
         if (isset($options['body']) && $options['body'] instanceof AbstractModel) {
-            $httpOptions['headers']['Content-Type'] = static::API_CONTENT_TYPE_JSON;
+            $httpOptions['headers']['Content-Type'] = $options['consumes'] ?? static::API_CONTENT_TYPE_FALLBACK;
             $httpOptions['body'] = json_encode($options['body']->toArray(true));
         }
 
         // pass through query parameters without null values
         if (isset($options['query'])) {
             $httpOptions['query'] = array_filter($options['query'], function ($value) {
+                return $value !== null;
+            });
+        }
+
+        // pass through multipart parameters without null values
+        if (isset($options['multipart'])) {
+            $httpOptions['multipart'] = array_filter($options['multipart'], function ($value) {
+                return $value !== null;
+            });
+        }
+
+        // pass through form_params parameters without null values
+        if (isset($options['form_params'])) {
+            $httpOptions['form_params'] = array_filter($options['form_params'], function ($value) {
                 return $value !== null;
             });
         }

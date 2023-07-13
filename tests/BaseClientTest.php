@@ -1,20 +1,20 @@
 <?php
 
-namespace Picqer\BolRetailerV8\Tests;
+namespace Picqer\BolRetailer\Tests;
 
 use GuzzleHttp\Exception\ClientException as GuzzleClientException;
 use GuzzleHttp\Psr7\Message;
 use GuzzleHttp\Client as HttpClient;
 use GuzzleHttp\Psr7\Request;
 use PHPUnit\Framework\TestCase;
-use Picqer\BolRetailerV8\BaseClient;
-use Picqer\BolRetailerV8\Exception\Exception;
-use Picqer\BolRetailerV8\Exception\RateLimitException;
-use Picqer\BolRetailerV8\Exception\ResponseException;
-use Picqer\BolRetailerV8\Exception\ServerException;
-use Picqer\BolRetailerV8\Exception\UnauthorizedException;
-use Picqer\BolRetailerV8\AuthToken;
-use Picqer\BolRetailerV8\Model\AbstractModel;
+use Picqer\BolRetailer\BaseClient;
+use Picqer\BolRetailer\Exception\Exception;
+use Picqer\BolRetailer\Exception\RateLimitException;
+use Picqer\BolRetailer\Exception\ResponseException;
+use Picqer\BolRetailer\Exception\ServerException;
+use Picqer\BolRetailer\Exception\UnauthorizedException;
+use Picqer\BolRetailer\AuthToken;
+use Picqer\BolRetailer\Model\AbstractModel;
 use Psr\Http\Message\ResponseInterface;
 
 class BaseClientTest extends TestCase
@@ -590,14 +590,43 @@ class BaseClientTest extends TestCase
             });
 
         $this->client->request('GET', 'foobar', [
-            'produces' => 'application/vnd.retailer.v8+pdf'
+            'produces' => 'application/vnd.retailer.v10+pdf'
         ], [
             '200' => 'string'
         ]);
 
         $this->assertArrayHasKey('headers', $actualOptions);
         $this->assertArrayHasKey('Accept', $actualOptions['headers']);
-        $this->assertEquals('application/vnd.retailer.v8+pdf', $actualOptions['headers']['Accept']);
+        $this->assertEquals('application/vnd.retailer.v10+pdf', $actualOptions['headers']['Accept']);
+    }
+
+    public function testRequestAddsConsumesAsContentTypeHeader()
+    {
+        $this->authenticateByClientCredentials();
+
+        $model = new $this->modelClass();
+        $model->foo = 'bar';
+
+        $actualOptions = null;
+        $response = Message::parseResponse(file_get_contents(__DIR__ . '/Fixtures/http/200-string'));
+        $this->httpClientMock
+            ->expects($this->once())
+            ->method('request')
+            ->willReturnCallback(function ($method, $uri, $options) use ($response, &$actualOptions) {
+                $actualOptions = $options;
+                return $response;
+            });
+
+        $this->client->request('POST', 'foobar', [
+            'body' => $model,
+            'consumes' => 'application/vnd.retailer.vxx+json'
+        ], [
+            '200' => 'string'
+        ]);
+
+        $this->assertArrayHasKey('headers', $actualOptions);
+        $this->assertArrayHasKey('Accept', $actualOptions['headers']);
+        $this->assertEquals('application/vnd.retailer.vxx+json', $actualOptions['headers']['Content-Type']);
     }
 
     public function testRequestJsonEncodesBodyModelIntoBody()
