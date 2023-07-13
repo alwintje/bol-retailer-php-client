@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Picqer\BolRetailerV10\Exception;
+namespace Picqer\BolRetailer\Exception;
 
 class RequestException extends Exception
 {

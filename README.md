@@ -11,7 +11,7 @@ composer require picqer/bol-retailer-php-client "^10"
 ## Usage
 Create an instance of the client and authenticate using the [Client Credentials flow](https://api.bol.com/retailer/public/Retailer-API/authentication.html#_client_credentials_flow)
 ```php
-$client = new \Picqer\BolRetailerV10\Client();
+$client = new \Picqer\BolRetailer\Client();
 $client->authenticateByClientCredentials('your-client-id', 'your-client-secret');
 ```
 
@@ -28,10 +28,10 @@ To save requests to Bol.com, you may reuse the access token:
 ```php
 $accessToken = ... // your implementation of getting the access token from the storage
 
-$client = new \Picqer\BolRetailerV10\Client();
+$client = new \Picqer\BolRetailer\Client();
 $client->setAccessToken($accessToken);
 
-$client->setAccessTokenExpiredCallback(function(\Picqer\BolRetailerV10\Client $client) {
+$client->setAccessTokenExpiredCallback(function(\Picqer\BolRetailer\Client $client) {
   // Called at the beginning of a request to the Retailer API when the access token was expired (or
   // non-existent) and after a request that resulted in an error about an expired access token.
   
@@ -46,7 +46,7 @@ $client->setAccessTokenExpiredCallback(function(\Picqer\BolRetailerV10\Client $c
 When authenticating using the [Code flow](https://api.bol.com/retailer/public/Retailer-API/intermediary-authorization.html), after receiving and validating the shortcode on your callback uri, you need to retrieve the first access and refresh token:
 
 ```php
-$client = new \Picqer\BolRetailerV10\Client();
+$client = new \Picqer\BolRetailer\Client();
 
 $refreshToken = $client->authenticateByAuthorizationCode(
     '{your-client-id}',
@@ -62,7 +62,7 @@ $orders = $client->getOrders();
 
 The access token needs to be (re)used to make requests to the Retailer API.
 ```php
-$client = new \Picqer\BolRetailerV10\Client();
+$client = new \Picqer\BolRetailer\Client();
 
 $accessToken = ... // your implementation of getting the access token from the storage
 $client->setAccessToken($accessToken);
@@ -74,11 +74,11 @@ The access token code is valid for a limited amount of time (600 seconds at time
 
 ```php
 
-$client = new \Picqer\BolRetailerV10\Client();
+$client = new \Picqer\BolRetailer\Client();
 
 $accessToken = ... // your implementation of getting the access token from the storage
 $client->setAccessToken($accessToken);
-$client->setAccessTokenExpiredCallback(function(\Picqer\BolRetailerV10\Client $client) {
+$client->setAccessTokenExpiredCallback(function(\Picqer\BolRetailer\Client $client) {
   // Called at the beginning of a request to the Retailer API when the access token was expired or
   // non-existent and after a request that resulted in an error about an expired access token.
   
@@ -100,12 +100,12 @@ The example above assumed your Bol.com integration account uses a refresh token 
 If your refresh token changes after each use ('Method 2'), then you need to store the new refresh token after refreshing. In this case a refresh token can only be used once. When multiple processes are refreshing simultaneously, there is a risk that due to race conditions a used refresh token is stored last. This means that from then on it's impossible to refresh and the user needs to manually log in again. To prevent this, you need to work with locks, in such a way that it guarantees that only the latest refresh token is stored and used. The example below uses a blocking mutex.
 
 ```php
-$client = new \Picqer\BolRetailerV10\Client();
+$client = new \Picqer\BolRetailer\Client();
 
 $accessToken = ... // your implementation of getting the access token from the storage
 $client->setAccessToken($accessToken);
 
-$client->setAccessTokenExpiredCallback(function(\Picqer\BolRetailerV10\Client $client) use ($mutex) {
+$client->setAccessTokenExpiredCallback(function(\Picqer\BolRetailer\Client $client) use ($mutex) {
   // Called at the beginning of a request to the Retailer API when the access token was expired or
   // non-existent and after a request that resulted in an error about an expired access token.
   
@@ -139,7 +139,7 @@ $orders = $client->getOrders();
 ```
 
 ## Exceptions
-Methods on the Client may throw Exceptions. All Exceptions have the parent class `Picqer\BolRetailerV10\Exception\Exception`:
+Methods on the Client may throw Exceptions. All Exceptions have the parent class `Picqer\BolRetailer\Exception\Exception`:
 - `ConnectException` is thrown when a problem occurred in the connection (e.g. API server is down or a network issue). You may retry later.
 - `ServerException` (extends `ConnectException`) is thrown when a problem occurred on the Server (e.g. 500 Internal Server Error). You may retry later.
 - `ResponseException` is thrown when the received response could not be handled (e.g. not of proper format or unexpected type). Retrying will not help, investigation is needed.
@@ -191,7 +191,7 @@ The specifications define types for each request and response (if it needs to se
 
 To generate the Client, the following composer script may be used:
 ```
-# Generates Picqer\BolRetailerV10\Client
+# Generates Picqer\BolRetailer\Client
 composer run-script generate-client
 ```
 
@@ -200,7 +200,7 @@ The class names for models are equal to the keys of the array 'definitions' in t
 
 To generate the Models, the following composer script may be used:
 ```
-# Generates all Picqer\BolRetailerV10\Model\* models
+# Generates all Picqer\BolRetailer\Model\* models
 composer run-script generate-models
 ```
 

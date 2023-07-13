@@ -15,4 +15,4 @@ To replace ${name} to $name, use the following:
 ```
 
 
-
+* Search and replace BolRetailerV10 or other version with BolRetailer
