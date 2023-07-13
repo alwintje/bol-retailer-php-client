@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Picqer\BolRetailerV8\Exception;
+namespace Picqer\BolRetailer\Exception;
 
 class UnauthorizedException extends RequestException
 {
