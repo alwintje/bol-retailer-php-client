@@ -853,7 +853,7 @@ class Client extends BaseClient
      */
     public function getProductAssets(string $ean, ?string $usage = 'PRIMARY'): array
     {
-        $url = "retailer/products/${ean}/assets";
+        $url = "retailer/products/$ean/assets";
         $options = [
             'query' => [
                 'usage' => $usage,
@@ -886,7 +886,7 @@ class Client extends BaseClient
      */
     public function getCompetingOffers(string $ean, ?int $page = 1, ?string $countryCode = 'NL', ?bool $bestOfferOnly = false, ?string $condition = 'NEW'): array
     {
-        $url = "retailer/products/${ean}/offers";
+        $url = "retailer/products/$ean/offers";
         $options = [
             'query' => [
                 'page' => $page,
@@ -919,7 +919,7 @@ class Client extends BaseClient
      */
     public function getProductPlacement(string $ean, ?string $countryCode = 'NL', ?string $AcceptLanguage = 'nl'): ?Model\ProductPlacementResponse
     {
-        $url = "retailer/products/${ean}/placement";
+        $url = "retailer/products/$ean/placement";
         $options = [
             'query' => [
                 'country-code' => $countryCode,
@@ -946,7 +946,7 @@ class Client extends BaseClient
      */
     public function getProductIds(string $ean): ?Model\ProductIdsResponse
     {
-        $url = "retailer/products/${ean}/product-ids";
+        $url = "retailer/products/$ean/product-ids";
         $options = [
             'produces' => 'application/vnd.retailer.v9+json',
         ];
@@ -970,7 +970,7 @@ class Client extends BaseClient
      */
     public function getProductRatings(string $ean): array
     {
-        $url = "retailer/products/${ean}/ratings";
+        $url = "retailer/products/$ean/ratings";
         $options = [
             'produces' => 'application/vnd.retailer.v9+json',
         ];
@@ -1360,7 +1360,7 @@ class Client extends BaseClient
      */
     public function getRetailerInformation(string $retailerId): ?Model\RetailerInformationResponse
     {
-        $url = "retailer/retailers/${retailerId}";
+        $url = "retailer/retailers/$retailerId";
         $options = [
             'produces' => 'application/vnd.retailer.v9+json',
         ];
@@ -1825,7 +1825,7 @@ class Client extends BaseClient
      */
     public function getPriceStarBoundaries(string $ean): ?Model\PriceStarBoundaries
     {
-        $url = "retailer/insights/price-star-boundaries/${ean}";
+        $url = "retailer/insights/price-star-boundaries/$ean";
         $options = [
             'produces' => 'application/vnd.retailer.v10+json',
         ];
@@ -1883,7 +1883,7 @@ class Client extends BaseClient
      */
     public function uploadInvoice(string $invoice, string $shipmentId): ?Model\ProcessStatus
     {
-        $url = "retailer/shipments/invoices/${shipmentId}";
+        $url = "retailer/shipments/invoices/$shipmentId";
         $options = [
             'multipart' => [
                 [
